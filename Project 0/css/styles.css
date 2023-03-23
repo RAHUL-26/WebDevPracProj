@@ -1,0 +1,124 @@
+body{
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+}
+header
+{
+    background-color: #2E94CC;
+    color: white;
+    text-align: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    font-size: 24px;
+    letter-spacing: 0.6px;
+    line-height: 30px;
+}
+
+article
+{
+    max-width: 850px;
+    margin: auto;
+    padding: 8px;
+    padding-top: 70px;
+}
+
+.post-author   /*class*/
+{
+    font-size: 12px;
+    line-height: 18px;
+    /* identical to box height, or 150% */
+    color: #6C6C6C;
+}
+
+.share-post, 
+.links-title
+{
+    font-size: 12px;
+    line-height: 22px;
+    font-weight: 400;
+   
+}
+
+.share-post span
+{
+    margin-right: 4px;
+}
+
+.share-post img
+{
+    vertical-align: middle;
+    width: 25px;
+}
+.links-title
+{
+    margin-bottom: 12px;
+}
+
+.hero-image{
+    margin: 50px 0;
+}
+.hero-image img{
+    max-width: 100%;
+    width: 1000px;
+}
+
+.uppercase
+{
+    text-transform: uppercase;
+}
+h1{
+    margin: 0;
+    margin-bottom: 10px;
+    font-weight: 400;
+    font-size: 52px;
+    line-height: 58px;
+/* identical to box height, or 112% */
+
+letter-spacing: 0.015em;
+}
+
+#content-section
+{
+    max-width: 680px;
+    margin: auto;
+}
+
+iframe
+{
+    margin: 50px 0;
+    max-width: 100%;
+}
+
+footer
+{
+    background-color: #f1f1f1;
+    max-width: 680px;
+    margin: auto;
+    padding: 20px 15px;
+    margin-bottom: 70px;
+}
+
+footer a{
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+footer ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0%;
+}
+
+footer ul li {
+    margin-bottom: 12px;
+}
+
+footer ul li:last-of-type {
+    margin-bottom: 0;
+}
+
+a
+{
+    color: #07acf8;
+}
