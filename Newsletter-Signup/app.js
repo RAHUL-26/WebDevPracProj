@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const request = require("request");  
 const https = require("https");
 
+require("dotenv").config();
+
 const app=express();
 
 app.use(bodyParser.urlencoded({extended:true}));
@@ -12,6 +14,7 @@ app.use(express.static("public"));
 
 app.get("/",function(req,res){
     res.sendFile(__dirname+"/signup.html");
+    
 });
 
 
@@ -34,13 +37,19 @@ app.post("/",function(req,res){
    };
 
    const jsonData = JSON.stringify(data);
+   
+   const UID_M=process.env.UID_M;
+   const APIKey=process.env.APIKey;
+
+   //console.log(UID_M+" "+APIKey);
   
-   const url = "https://us21.api.mailchimp.com/3.0/lists/208467034a";
+  
+   const url = "https://us21.api.mailchimp.com/3.0/lists/"+UID_M;
 
 
    const options={
     method: "POST",
-    auth:"Rahul:800a6b8b0b3a3280a8d7a4b9ddf2e945-us21"
+    auth:"Rahul:"+APIKey
    }
 
    const request = https.request(url,options,function(response){
@@ -72,10 +81,6 @@ app.post("/failure",function(req,res){
 
 app.listen(process.env.PORT || 3000,function(){
     console.log("Server running at port 3000");
+    
 });
 
-//////API Key MailChip
-//800a6b8b0b3a3280a8d7a4b9ddf2e945-us21
-
-//UID Mailchip (List ID)
-//208467034a
