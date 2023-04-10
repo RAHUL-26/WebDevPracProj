@@ -2,11 +2,13 @@ const express = require("express");
 const bodyParser=require("body-parser");
 
 const mongoose = require("mongoose");
+const _ = require("lodash");
 
 //const date=require(__dirname+"/date.js");
 //now date contains the getDate function declared inside the date.js module
 
 const app = express();
+require("dotenv").config();
 
 var newTodos=["Do EJS","Do Leetcode","Revise"];   //var newTodo=""; overwrites , so use array
 var newWorks=[];
@@ -15,7 +17,9 @@ app.set('view engine', 'ejs');
 
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://127.0.0.1:27017/todolistDB");
+const USER_ID_PASS=process.env.USER_ID_PASS;
+
+mongoose.connect("mongodb+srv://"+USER_ID_PASS+"@cluster0.bexazrs.mongodb.net/myFirstDatabase");
 
 const itemSchema = new mongoose.Schema({
 name:String
@@ -33,10 +37,17 @@ const item2 = new Item({
 
 const item3 = new Item({
     name: "Item 3"
-})
-
+});
 
 const defaultItems = [item1,item2,item3];
+
+const listSchema = {
+    name: String,
+    items: [itemSchema]
+};
+
+const List = mongoose.model("List",listSchema);
+
 
 
 app.get("/",async function(req,res){
@@ -65,7 +76,7 @@ app.get("/",async function(req,res){
     
     const allTodoItems = await Item.find();
 
-    console.log(allTodoItems);
+    //console.log(allTodoItems);
     if(allTodoItems.length===0)
     {
         Item.insertMany(defaultItems).then(function(){
@@ -81,34 +92,97 @@ app.get("/",async function(req,res){
     }
  });
 
-app.post("/",function(req,res){
+app.post("/",async function(req,res){
 
     //console.log(req.body);
 
-    if(req.body.button==='Work List')
-    {
-        var newWork = req.body.new_todo;
-        newWorks.push(newWork);
-        res.redirect("/work");
-    }
-    else{
-    var newTodo = req.body.new_todo;
-
+    // if(req.body.button==='Work List')
+    // {
+    //     var newWork = req.body.new_todo;
+    //     newWorks.push(newWork);
+    //     res.redirect("/work");
+    // }
+    // else{
+    const newTodo = req.body.new_todo;
+    const listName = req.body.button;
+    
     const newTodoItem = new Item({
         name:newTodo
     });
     
-    newTodoItem.save();
+    if(listName==="Today"){
+        newTodoItem.save();
+        res.redirect("/");
+    }
+    else{
+        console.log(listName);
+        const found = await List.findOne({name:listName}).exec();
+        //console.log(found);
+        found.items.push(newTodoItem);
+                found.save();
+                res.redirect("/"+listName);
+    }
+
+    
+    
+   
     
    // newTodos.push(newTodo);
-    res.redirect("/");
-    }
+    //}
     // res.render("list",{newlistItem:newTodo});
 });
 
-app.get("/work",function(req,res){
-    res.render("list",{listTitle: "Work List", newListItems:newWorks});
+app.post("/delete",async function(req,res){
+  //console.log(req.body.checkbox);
+
+  const checkedItemId = req.body.checkbox;
+  const listName = req.body.listName;
+  
+  if(listName==="Today")
+  {
+    Item.deleteOne({_id:checkedItemId}).then(function(){
+        console.log(checkedItemId+" deleted");
+      }).catch(function(err){
+        console.log(err);
+      });
+    
+      res.redirect("/");
+    
+  }
+  else{
+    const found = await List.findOneAndUpdate(
+        {name:listName},
+        {$pull:{items:{_id:checkedItemId}}}
+        );
+     //console.log(found);
+     res.redirect("/"+listName);
+  }
+
+
 });
+
+app.get("/:customListName",async function(req,res){
+    const requestedListPage = _.capitalize(req.params.customListName);
+    
+    const found = await List.findOne({name:requestedListPage}).exec();
+     console.log(found);
+    if(found===null)
+    {
+        const newList = new List({
+            name:requestedListPage,
+            items:defaultItems
+        });
+        newList.save();
+        res.redirect("/"+requestedListPage);
+    }
+    else{
+        res.render("list",{listTitle:found.name,newListItems:found.items}); 
+    }
+
+});
+// app.get("/work",function(req,res){
+//     res.render("list",{listTitle: "Work List", newListItems:newWorks});
+// });
 
 app.get("/about",function(req,res){
     res.render("about");
